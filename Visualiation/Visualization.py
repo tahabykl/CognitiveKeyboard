@@ -47,10 +47,14 @@ gender_filter = st.sidebar.selectbox("Select Gender", options=gender_options)
 race_options = ["All"] + list(data['race'].unique())
 race_filter = st.sidebar.selectbox("Select Race", options=race_options)
 
+# Calculate min and max dates from the dataset
+min_date = data['timestamp'].min().date()
+max_date = data['timestamp'].max().date()
+
 # Timestamp filter (start time and end time)
-st.sidebar.write("Select Timestamp Range")
-start_time = st.sidebar.time_input("Start Time", value=datetime.min.time())
-end_time = st.sidebar.time_input("End Time", value=datetime.max.time())
+st.sidebar.write("Select Date Range")
+start_date = st.sidebar.date_input("Start Date", value=min_date)
+end_date = st.sidebar.date_input("End Date", value=max_date)
 
 # Filtering the data based on the filters
 filtered_data = data.copy()
@@ -75,8 +79,7 @@ if race_filter != "All":
     filtered_data = filtered_data[filtered_data['race'] == race_filter]
 
 # Apply timestamp filter
-filtered_data = filtered_data[(filtered_data['timestamp'].dt.time >= start_time) & (filtered_data['timestamp'].dt.time <= end_time)]
-
+filtered_data = filtered_data[(filtered_data['timestamp'].dt.date >= start_date) & (filtered_data['timestamp'].dt.date <= end_date)]
 st.write("### Filtered Data")
 if filtered_data.empty:
     st.write("No data available for the selected filters.")
