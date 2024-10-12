@@ -1,0 +1,3 @@
+[submodule "simple-keyboard"]
+	path = simple-keyboard
+	url = https://github.com/rkkr/simple-keyboard
