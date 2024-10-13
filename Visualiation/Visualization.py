@@ -6,17 +6,95 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from datetime import datetime
+import fetch
 
+import requests
+import json
+
+
+def parse_json():
+    data = fetch.getJson()
+    ages = [entry['age'] for entry in data]
+    races = [entry['race'] for entry in data]
+    genders = [entry['gender'] for entry in data]
+    # names = [entry['name'] for entry in data]
+    # uuids = [entry['uuid'] for entry in data]
+
+    # Initialize lists to hold the averages
+    backspace_count = []
+    interKeystrokeInterval = []
+    characterVariability = []
+    specialCharacterUsage = []
+    typingSpeed = []
+
+# Loop through the data entries
+    for entry in data:
+        # Initialize temporary lists for the current entry's metrics
+        curr_typingAccuracy = []
+        curr_interKeystrokeInterval = []
+        curr_characterVariability = []
+        curr_specialCharacterUsage = []
+        curr_typingSpeed = []
+        
+        for pattern in entry['typing_patterns']:
+            # Append each metric to its respective list, using 0 as a default if the key doesn't exist
+            curr_typingAccuracy.append(pattern.get('typingAccuracy', 0))
+            curr_interKeystrokeInterval.append(pattern.get('interKeystrokeInterval', 0))
+            curr_characterVariability.append(pattern.get('characterVariability', 0))
+            curr_specialCharacterUsage.append(pattern.get('specialCharacterUsage', 0))
+            curr_typingSpeed.append(pattern.get('typingSpeed', 0))
+
+        # Calculate and append the averages for each metric
+        backspace_count.append(sum(curr_typingAccuracy) / len(curr_typingAccuracy) if curr_typingAccuracy else 0)
+        interKeystrokeInterval.append(sum(curr_interKeystrokeInterval) / len(curr_interKeystrokeInterval) if curr_interKeystrokeInterval else 0)
+        characterVariability.append(sum(curr_characterVariability) / len(curr_characterVariability) if curr_characterVariability else 0)
+        specialCharacterUsage.append(sum(curr_specialCharacterUsage) / len(curr_specialCharacterUsage) if curr_specialCharacterUsage else 0)
+        typingSpeed.append(sum(curr_typingSpeed) / len(curr_typingSpeed) if curr_typingSpeed else 0)
+
+
+    # print(json.dumps(data, indent=4))
+    # print("ages: ", ages)
+    # print("races: ", races)
+    # print("genders: ", genders)
+    # print("names: ", names)
+    # print("uuids: ", uuids)
+    # print("backspace_count: ", backspace_count)
+
+
+    pd_data = pd.DataFrame({
+    'age': ages,
+    'race': races,
+    'gender': genders,
+    'backspace count': backspace_count,
+    'Inter Keystroke Interval': interKeystrokeInterval,
+    'Character Variability': characterVariability,
+    'Special Character Usage': specialCharacterUsage,
+    'Typing Speed': typingSpeed
+
+
+    # 'contact number': ['123-456-7890', '234-567-8901', '345-678-9012', '456-789-0123', '567-890-1234', '678-901-2345'],
+    # 'backspace_count': [5, 3, 8, 2, 7, 4],
+    # 'char_counts': [{}, {}, {}, {}, {}, {}],
+    # 'special_char_count': [1, 2, 0, 3, 1, 2],
+    # 'typing_speed': [50, 45, 60, 55, 48, 52]
+    
+    })
+
+    st.write(pd_data.iloc[:])
 
 
 # Can siply connect to the pandas.
 # Sample data to test the visualization
+
+parse_json()
+
+
 data = pd.DataFrame({
     'age': [25, 30, 22, 28, 35, 40],
     'race': ['Asian', 'Caucasian', 'Hispanic', 'African American', 'Caucasian', 'Asian'],
     'gender': ['Male', 'Female', 'Male', 'Female', 'Male', 'Female'],
     'contact number': ['123-456-7890', '234-567-8901', '345-678-9012', '456-789-0123', '567-890-1234', '678-901-2345'],
-    'timestamp': [1620000000, 1620003600, 1620007200, 1620010800, 1620014400, 1620018000],
+    'timestamp': [1620000000, 1620003600, 1620007200, 1620010800, 1625125800, 1605125800],
     'backspace_count': [5, 3, 8, 2, 7, 4],
     'char_counts': [{}, {}, {}, {}, {}, {}],
     'special_char_count': [1, 2, 0, 3, 1, 2],
@@ -146,3 +224,5 @@ else:
         st.write("Not enough data points for clustering.")
 
 st.write("### Visualization Complete")
+
+
